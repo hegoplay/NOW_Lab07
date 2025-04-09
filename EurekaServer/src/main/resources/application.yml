@@ -1,0 +1,13 @@
+server:
+  port: 8761
+
+eureka:
+  client:
+    register-with-eureka: false  # Không đăng ký chính nó với Eureka
+    fetch-registry: false       # Không cần lấy registry vì đây là server
+  instance:
+    hostname: localhost
+
+spring:
+  application:
+    name: eureka-server

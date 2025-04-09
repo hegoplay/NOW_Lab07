@@ -1,0 +1,49 @@
+# Server
+server:
+  port: 8080
+
+# MySQL R2DBC
+spring:
+  application:
+    name: ProductService
+  r2dbc:
+    url: r2dbc:mysql://mysql:3306/productdb
+    username: admin
+    password: password
+    pool:
+      initial-size: 5
+      max-size: 20
+
+# Flyway (tùy ch\u1ECDn, \u0111\u1EC3 migrate schema)
+  flyway:
+    enabled: true
+    url: jdbc:mysql://mysql:3306/productdb
+    user: admin
+    password: password
+    locations: classpath:db/migration
+
+# Actuator
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always
+  info:
+    env:
+      enabled: true
+
+# Logging
+logging:
+  level:
+    org.springframework: INFO
+    io.r2dbc: DEBUG
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    prefer-ip-address: true
