@@ -1,5 +1,7 @@
 package iuh.se.fit.controller;
 
+import java.net.URI;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -11,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import iuh.se.fit.model.Product;
 import iuh.se.fit.service.ProductService;
@@ -28,34 +31,33 @@ public class ProductController {
     }
     
     @GetMapping("/{id}")
-    public Mono<ResponseEntity<Product>> getProduct(@PathVariable String id) {
+    @ResponseStatus(HttpStatus.OK)
+    public Mono<Product> getProduct(@PathVariable Integer id) {
         return productService.getProduct(id)
-            .map(product -> ResponseEntity.ok(product))
-            .defaultIfEmpty(ResponseEntity.notFound().build());
+            .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND)));
     }
     
-    @GetMapping
+    @GetMapping("/")
     public Flux<Product> getAllProducts() {
         return productService.getAllProducts();
     }
-    
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public Mono<Product> createProduct(@RequestBody Product product) {
-        return productService.createProduct(product);
-    }
+   
+	@PostMapping("/")
+	@ResponseStatus(HttpStatus.CREATED)
+	public Mono<Product> createProduct(@RequestBody Product product) {
+	    return productService.createProduct(product);
+	}
     
     @PutMapping
     public Mono<ResponseEntity<Product>> updateProduct(@RequestBody Product product) {
         return productService.updateProduct(product)
-            .map(updatedProduct -> ResponseEntity.ok(updatedProduct))
+            .map(ResponseEntity::ok)
             .defaultIfEmpty(ResponseEntity.notFound().build());
     }
     
     @DeleteMapping("/{id}")
-    public Mono<ResponseEntity<Object>> deleteProduct(@PathVariable String id) {
-        return productService.deleteProduct(id)
-            .then(Mono.just(ResponseEntity.ok().build()))
-            .onErrorResume(e -> Mono.just(ResponseEntity.notFound().build()));
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public Mono<Void> deleteProduct(@PathVariable Integer id) {
+        return productService.deleteProduct(id);
     }
 }

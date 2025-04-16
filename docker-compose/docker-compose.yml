@@ -1,29 +1,46 @@
-version: '3.8'
-
 services:
-  app:
-    build:
-      context: ../ProductService
-      dockerfile: Dockerfile
-    ports:
-      - "8080:8080"
-    depends_on:
-      - productMYSQL
-    environment:
-      - SPRING_R2DBC_URL=r2dbc:productMYSQL://mysql:3306/productdb
-      - SPRING_R2DBC_USERNAME=admin
-      - SPRING_R2DBC_PASSWORD=password
-      - SPRING_FLYWAY_URL=jdbc:productMYSQL://mysql:3306/productdb
-      - SPRING_FLYWAY_USER=admin
-      - SPRING_FLYWAY_PASSWORD=password
-    networks:
-      - app-network
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"] # Kiểm tra endpoint health
-      interval: 30s  # Kiểm tra mỗi 30 giây
-      timeout: 5s    # Timeout sau 5 giây nếu không phản hồi
-      retries: 5     # Thử lại 5 lần trước khi coi là unhealthy
-      start_period: 15s # Chờ 15s giây trước khi bắt đầu kiểm tra (cho app khởi động)
+  # eureka:
+  #   build:
+  #     context: ../EurekaServer
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "8761:8761"
+  #   networks:
+  #     - app-network
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:8761/actuator/health | grep -q UP"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 5
+  #     start_period: 10s
+
+  # app:
+  #   build:
+  #     context: ../ProductService
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "8080:8080"
+  #   depends_on:
+  #     productMYSQL:
+  #       condition: service_healthy
+  #     eureka:
+  #       condition: service_healthy
+  #   environment:
+  #     - SPRING_R2DBC_URL=r2dbc:mysql://productMYSQL:3306/productdb  # Đã sửa
+  #     - SPRING_R2DBC_USERNAME=admin
+  #     - SPRING_R2DBC_PASSWORD=password
+  #     - SPRING_FLYWAY_URL=jdbc:mysql://productMYSQL:3306/productdb  # Đã sửa
+  #     - SPRING_FLYWAY_USER=admin
+  #     - SPRING_FLYWAY_PASSWORD=password
+  #     - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka:8761/eureka/
+  #   networks:
+  #     - app-network
+  #   healthcheck:
+  #     test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 5
+  #     start_period: 10s
 
   productMYSQL:
     image: mysql:8.0
@@ -38,11 +55,13 @@ services:
     networks:
       - app-network
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uadmin", "-ppassword"] # Kiểm tra MySQL sống
-      interval: 10s   # Kiểm tra mỗi 10 giây
-      timeout: 5s     # Timeout sau 5 giây
-      retries: 5      # Thử lại 5 lần
-      start_period: 10s # Chờ 30 giây để MySQL khởi động
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uadmin", "-ppassword"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s  # Tăng thời gian chờ cho MySQL
+    ports:
+      - "3306:3306"
 
 volumes:
   mysql-data:

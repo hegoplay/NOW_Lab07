@@ -6,7 +6,7 @@ import reactor.core.publisher.Mono;
 
 
 public interface ProductService {
-	Mono<Product> getProduct(String id);
+	Mono<Product> getProduct(Integer id);
 	
 	Flux<Product> getAllProducts();
     
@@ -17,7 +17,7 @@ public interface ProductService {
     Mono<Product> updateProduct(Product product);
     
     // Delete
-    Mono<Void> deleteProduct(String id);
+    Mono<Void> deleteProduct(Integer id);
 	
 	
 }

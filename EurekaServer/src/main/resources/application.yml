@@ -6,8 +6,20 @@ eureka:
     register-with-eureka: false  # Không đăng ký chính nó với Eureka
     fetch-registry: false       # Không cần lấy registry vì đây là server
   instance:
-    hostname: localhost
+    hostname: eureka
 
 spring:
   application:
-    name: eureka-server
+    name: eureka
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always
+  info:
+    env:
+      enabled: true

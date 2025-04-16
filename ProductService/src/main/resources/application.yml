@@ -7,7 +7,7 @@ spring:
   application:
     name: ProductService
   r2dbc:
-    url: r2dbc:mysql://mysql:3306/productdb
+    url: r2dbc:mysql://localhost:3306/productdb
     username: admin
     password: password
     pool:
@@ -17,7 +17,7 @@ spring:
 # Flyway (tùy ch\u1ECDn, \u0111\u1EC3 migrate schema)
   flyway:
     enabled: true
-    url: jdbc:mysql://mysql:3306/productdb
+    url: jdbc:mysql://localhost:3306/productdb
     user: admin
     password: password
     locations: classpath:db/migration

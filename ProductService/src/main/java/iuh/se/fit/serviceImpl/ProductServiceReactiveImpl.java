@@ -19,7 +19,7 @@ public class ProductServiceReactiveImpl implements ProductService {
 	
 	
 	@Override
-	public Mono<Product> getProduct(String id) {
+	public Mono<Product> getProduct(Integer id) {
 		// TODO Auto-generated method stub
 		return repository.findById(id);
 	}
@@ -44,19 +44,12 @@ public class ProductServiceReactiveImpl implements ProductService {
     }
 
 	@Override
-    public Mono<Product> createProduct(Product product) {
-        // Có thể thêm validation nếu cần
-		return repository.findById(product.getId()).flatMap(databaseProduct -> {
-			if (databaseProduct != null) throw new RuntimeException("Product id: " + product.getId() + " found");
-			// Cập nhật các thuộc tính của product
-			
-			return repository.save(product);
-		})
-		.switchIfEmpty(repository.save(product));
-    }
-
+	public Mono<Product> createProduct(Product product) {
+	    product.setId(null); // Ensure insert instead of update
+	    return repository.save(product);
+	}
 	@Override
-	public Mono<Void> deleteProduct(String id) {
+	public Mono<Void> deleteProduct(Integer id) {
 		// TODO Auto-generated method stub
 		return repository.deleteById(id);
 	}

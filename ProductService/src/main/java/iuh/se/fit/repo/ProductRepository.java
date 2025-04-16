@@ -7,6 +7,6 @@ import org.springframework.stereotype.Repository;
 import iuh.se.fit.model.Product;
 
 @Repository
-public interface ProductRepository extends R2dbcRepository<Product, String> {
+public interface ProductRepository extends R2dbcRepository<Product, Integer> {
 	
 }
